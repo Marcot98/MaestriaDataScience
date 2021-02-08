@@ -1,3 +1,3 @@
 # MaestriaDataScience
-##Maestria Data Science Universidad Galileo
+## Maestria Data Science Universidad Galileo
 ### Marco Escobar
