@@ -1,0 +1,102 @@
+---
+title: "Laboratorio #2 - Dpylr y ggplot"
+output: html_notebook
+---
+
+# Los sistemas de renta de bicycletas se basan en kioskos que son puestos en diferentes áreas de una ciudad. En estos kioskos las personas pueden suscribirse, rentar y devolver las bicicletas.
+# Esto permite que el usurio rente un bicicleta y la pueda devolver en otro lado. Actualmente hay mas de 500 de estos proyectos alrededor del mundo.
+# Estos kioskos se vuelven sensores del flujo de personas dentro de ciudades
+
+# Variables
+# datetime - hourly date + timestamp
+# season - 1 = spring, 2 = summer, 3 = fall, 4 = winter
+# holiday - whether the day is considered a holiday
+# workingday - whether the day is neither a weekend nor holiday
+# weather - 1: Clear, Few clouds, Partly cloudy, Partly cloudy 2: Mist + Cloudy, Mist 
+# + Broken clouds, Mist + Few clouds, Mist 3: Light Snow, Light Rain + Thunderstorm + 
+# Scattered clouds, Light Rain + Scattered clouds 4: Heavy Rain + Ice Pallets + 
+# Thunderstorm + Mist, Snow + Fog
+# temp - temperature in Celsius
+# atemp - “feels like” temperature in Celsius
+# humidity - relative humidity
+# windspeed - wind speed
+# casual - number of non-registered user rentals initiated
+# registered - number of registered user rentals initiated
+# count - number of total rentals
+
+
+# 1. ¿Qué mes es el que tiene la mayor demanda?
+```{r}
+plot(cars)
+```
+
+# 2. ¿Qué rango de hora es la de mayor demanda?
+```{r}
+plot(cars)
+```
+
+# 3. ¿Qué temporada es la mas alta?
+```{r}
+plot(cars)
+```
+
+# 4. ¿A que temperatura baja la demanda?
+```{r}
+plot(cars)
+```
+
+# 5. ¿A que humedad baja la demanda?
+```{r}
+plot(cars)
+```
+
+# 6. ¿Que condiciones climáticas serian ideales para nuestra demanda? (considere una función de densidad bivariable)
+```{r}
+plot(cars)
+```
+
+# 7. Mueste una gráfica de la densidad de rentas.
+```{r}
+plot(cars)
+```
+
+# 8. Determine promedio de personas que rentan bicicletas y están registradas.
+```{r}
+plot(cars)
+```
+
+# 9. Determine la mediana de personas que rentan bicicletas y no están registradas.
+```{r}
+plot(cars)
+```
+
+# 10. Deterimne la renta total, renta promedio por cada tipo de condición climática.
+```{r}
+plot(cars)
+```
+
+# 11. Determine y muestre una gráfica de barras de cada renta por tipo de temporada.
+```{r}
+plot(cars)
+```
+
+# 12. Muestre una gráfica de la densidad por hora.
+```{r}
+plot(cars)
+```
+
+# 13. Muestre una gráfica de barras por día del mes como eje x y la cantidad total de alquileres como el eje Y.
+```{r}
+plot(cars)
+```
+
+# 14. Muestre una serie temporal (gráfica) con el tiempo (mes-dia-año) como eje de tiempo y la cantidad de alquieleres como ejer Y.
+```{r}
+plot(cars)
+```
+
+# 15. Muestre una gráfica de puntos que relaciones la temperatura como ejer X y la humedad como eje Y
+```{r}
+plot(cars)
+```
+

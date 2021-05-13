@@ -1,0 +1,218 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+## 
+```{r}
+a<-35
+a + 5
+```
+```{r}
+class(a)
+```
+```{r}
+b<-4343L
+class(b)
+```
+```{r}
+bool1<-TRUE
+bool2<-FALSE
+bool3<-T
+bool4<-F
+class(bool1)
+```
+```{r}
+s<-'Hola mundo!!!'
+s
+```
+```{r}
+tolower(s)
+toupper(s)
+nchar(s)
+substr(s, 2, 5)
+```
+```{r}
+miStr<-paste("Hola", "Como", "Estas", sep = "-")
+miStr
+```
+```{r}
+miStr<-paste("Variable<-", 4, sep="\n")
+cat(miStr)
+```
+```{r}
+eval(miStr)
+```
+```{r}
+#Arraglos inician en 1
+arr<-c(1,2,3,4,5,6)
+arr[4:5]
+```
+
+```{r}
+arr[1]
+```
+```{r}
+arr.Numeros<-rnorm(100, 10, 5)
+arr.Numeros
+```
+```{r}
+mean(arr.Numeros)
+median(arr.Numeros)
+sd(arr.Numeros)
+var(arr.Numeros)
+resumen<-summary(arr.Numeros)
+resumen
+```
+```{r}
+resumen[3]
+```
+```{r}
+resumen[4]
+```
+```{r}
+arr.Numeros2<-c(10,20,30,40,50)
+names(arr.Numeros2)<-c("A", "B", "C", "D", "E")
+summary(arr.Numeros2)
+```
+
+```{r}
+condicion<-arr.Numeros >= 5
+condicion
+```
+
+```{r}
+arr.Numeros[condicion]
+```
+
+```{r}
+sum(condicion)
+```
+```{r}
+arr.Numeros
+```
+
+#Lista
+```{r}
+a<-c(10,20,30,40,50,60)
+b<-rnorm(50, 12, 3)
+c<-"Hola Mundo!!!!"
+d<-c(T,F,F,T)
+
+lista1<-list(a, b, c, d)
+lista1
+```
+
+```{r}
+lista1[[1]][4]
+```
+
+```{r}
+substr(lista1[[3]], 5, 8)
+```
+```{r}
+lista2<-list(Numeros=a, Random=b, String=c, Logico=d)
+lista2
+```
+```{r}
+lista2$Random[4]
+```
+```{r}
+acc<-4
+cosa<-c("Hola", "mundo")
+j<-TRUE
+
+lista3<-list(numero=acc, stings=cosa, bool=j, Lista=lista1)
+lista3
+```
+```{r}
+lista3$Lista[[4]][4]<-F
+lista3
+```
+
+```{r}
+Nota<-round(rnorm(10, 70, 5), digits = 0)
+Carnet<-c("AA", "AB", "AC", "AD", "AF", "AE", "AG", "AR", "AT", "AC")
+lst.registro<-list(Notas=Nota, Carnet=Carnet)
+lst.registro
+```
+
+```{r}
+lst.registro$Carnet[lst.registro$Notas >= 70]
+```
+```{r}
+lst.registro[[2]][lst.registro[[1]] >= 70]
+```
+
+#Factores
+```{r}
+arr.personas<-sample(c("M", "F"), 15, replace = T)
+arr.personas
+```
+```{r}
+fct.personas<-factor(arr.personas)
+fct.personas
+```
+
+```{r}
+fct.personas<-factor(arr.personas, 
+                     levels = c("M", "F"),
+                     label=c("Hombre", "Mujer")
+                     )
+fct.personas
+```
+
+```{r}
+levels(fct.personas)
+```
+```{r}
+table(fct.personas)
+```
+```{r}
+freqq<-table(fct.personas)/length(fct.personas)
+freqq
+```
+```{r}
+barplot(freqq, 
+        main="Tabla Freq Relativa",
+        xlab="Genero",
+        ylab="Propoción",
+        col=c("cyan", "pink"),
+        space = c(0),
+        names.arg = c("Masculino", "Femenino"),
+        ylim=c(0, 0.7))
+```
+
+```{r}
+dataset<-read.csv("data.csv", sep=",", encoding = "UTF-8")
+dataset
+```
+
+```{r}
+str(dataset)
+```
+
+```{r}
+dataset$Name<-as.character(dataset$Name)
+```
+
+```{r}
+dataset[c(2,4, 5, 7), c(2,3,5)]
+```
+```{r}
+dataset[ , c(3:7)]
+```
+
+```{r}
+cond_filtro1<- ((dataset$Age >= 30) | (dataset$Nationality == "Germany"))
+dataset[cond_filtro1, ]
+```
+
+```{r}
+library(dplyr)
+glimpse(dataset)
+```
+
+
+
+
+

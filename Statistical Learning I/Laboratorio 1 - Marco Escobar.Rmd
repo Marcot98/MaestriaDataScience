@@ -1,0 +1,141 @@
+---
+title: "Laboratorio #1 - Basics en R"
+output: html_notebook
+---
+
+#1. ¿Cómo generaría un arreglo aleatorio de 250 elementos con los colores primarios? 
+
+```{r}
+datos <- sample(c('ROJO','AMARILLO','AZUL'), size=100, replace= TRUE)
+datos
+```
+#2. Dado un arreglo de 120000 elementos de números enteros entre 40 y 70, ¿Cómo haría para obtener la desviación estándar de aquellos números que son mayores a 55 y menores a 64?
+```{r}
+arregloD <- sample(c(40:70), size=120000, replace= TRUE)
+arregloD2 <- arregloD[(arregloD < 64) & (arregloD > 55)]
+sd(arregloD2)
+```
+#3. Suponga que se almacena en una variable un arreglo con todos los números de carnet de los estudiantes del Instituto de Investigación de Operaciones de la universidad en forma de string, los carnets tiene al inicio dos caracteres que identifican el año en el que la persona entró a la universidad por ejemplo: 19004528 hacer referencia a una persona que ingreso en el año 2019, 06009878 hace referencia a una persona que ingreso que el año 2006, ¿Cómo haría para contar la cantidad de alumnos por año?
+```{r}
+varArreglo <-c(19004528,19004527,1900452879,06009878,06009877)
+length(varArreglo)
+
+```
+
+#4. Define el vector y = (1, 3, 5, 7) utilizando la función c(). ¿Cómo lo harías con la función seq()? 
+```{r}
+y <- seq(from=1, to=7, by=2)
+y
+```
+
+#5. Si b <- list(a=1:10, c="Hola", d="XX"), escriba una expresión en R que devuelva todos los elementos de la lista excepto los elementos 4,6,6,7 del vector a. 
+```{r}
+b <- list(a=1:10, c="Hola", d="XX")
+b[[1]][-c(4,6,6,7)]
+b
+```
+
+#6. Dado los siguientes vectores, muestre el código en R necesario para declarar y calcular el promedio, deviación estándar, mediana, moda y sumatoria total para los siguientes vectores: a. x = (8, 7, 6, 5) b. y = (3, 3, 3, 3, 3, 3, 3, 3, 2, 2) c. z = (1, 1.75, 2.5,3.25, 4) 
+```{r}
+mode <- function(x) {
+   return(as.numeric(names(which.max(table(x)))))
+}
+
+x <- c(8, 7, 6, 5)
+c(mean(x), sd(x), median(x), mode(x), sum(x))
+
+y <- c(3, 3, 3, 3, 3, 3, 3, 3, 2, 2)
+c(mean(y), sd(y), median(y), mode(y), sum(y))
+
+z <- c(1, 1.75, 2.5,3.25, 4)
+c(mean(z), sd(z), median(z), mode(z), sum(z))
+
+```
+
+#7. Sabemos que para sumar vectores estos deben tener la misma longitud. Sin embargo R trabaja de manera distinta. Defina los vectores x = (1, 2, 3, 4, 5, 6), y = (7, 8), z = (9, 10, 11, 12). Calcula: a. x + x     b. x + y.   c. Responda ¿Qué ha hecho R? 
+```{r}
+x <- c(1, 2, 3, 4, 5, 6)
+y <- c(7, 8) 
+z <- c(9, 10, 11, 12)
+
+a <- x + x 
+b <- x + y
+
+#Ha sumando posicion por posicion dado que "X" tiene 6 elementos y "y" tiene 2 elementos, entonces suma primera posicion de x y y, segunda posicion de x y y, tercera posicion de x y repite primera posicion de y
+
+```
+
+8. Dada la variable string <- "Hola Mundo", escriba una instrucción en R que devuelva la siguiente salida: 
+[[1]]
+ [1] "Hola"
+[[2]]
+[1] "Mundo"
+```{r}
+string <- "Hola Mundo"
+lista <- list(split(string,"Hola"), split(string,"Mundo"))
+
+
+```
+
+
+#Problema #2
+#Antes de realizar este ejercicio limpie el Entorno de variales que ha construido hasta ahora, cargue el archivo data.Rdata en RStudio. Al cargarlo notará que existe una única variable llamada info_estidiantes, para dicha variable responda la siguientes preguntas:
+```{r}
+load("D:/Users/Tulio/Documentos/GitHub/MaestriaDataScience/Econometria en R/Laboratorio 1/data.RData")
+
+```
+#1.¿Qué tipo de dato es info_estudiantes? 
+```{r}
+class(info_estudiantes)
+
+```
+
+#2. ¿Cuantos elementos tiene info_estudiantes? 
+```{r}
+summary(info_estudiantes)
+
+```
+
+#3. ¿Qué representa cada uno de los elementos de info_estudiantes? 
+```{r}
+summary(info_estudiantes)
+
+```
+
+#4. ¿Cuál es la media de los estudiantes ingresados en el año 2019? 
+```{r}
+length(info_estudiantes$carnet[info_estudiantes$carnet >= "19000000"])
+```
+
+#5. ¿Cuál es la suma de desviación estándar de los estudiantes que ingresaron en el año 2016 y 2018?
+```{r}
+dat2016 <- sd(info_estudiantes$promedio[info_estudiantes$carnet >= "16000000" & info_estudiantes$carnet < "17000000" ])
+dat2018 <- sd(info_estudiantes$promedio[info_estudiantes$carnet >= "18000000" & info_estudiantes$carnet < "19000000" ])
+sum(dat2016,dat2018)
+
+```
+
+#6. ¿Cuál es el mínimo de notas de aquellos estudiantes donde su carnet termina con los números 45 a 48?
+```{r}
+info_estudiantes$promedio[grepl("^45",info_estudiantes$carnet)]
+
+
+```
+
+#7. ¿Cuál es la probabilidad de que un estudiante tipo A tenga una nota mayor a 85?
+```{r}
+info_TipoA <- length(info_estudiantes$tipo[info_estudiantes$tipo == "A"])
+info_nota <- length(info_estudiantes$promedio[info_estudiantes$promedio > 85])
+ndatos <- length(info_estudiantes$tipo)
+(info_TipoA / ndatos) + (info_nota / ndatos)
+
+```
+
+#8. ¿Cuál es la probabilidad de que un estudiante tipo C haya ingresado en el año 2017 o 2019
+```{r}
+dat2017 <- length(info_estudiantes$tipo[info_estudiantes$carnet >= "17000000" & info_estudiantes$carnet < "18000000" ])
+dat2019 <- length(info_estudiantes$tipo[info_estudiantes$carnet >= "19000000" & info_estudiantes$carnet < "20000000" ])
+ndatos <- length(info_estudiantes$tipo)
+(dat2017 + dat2019) / ndatos
+
+```
