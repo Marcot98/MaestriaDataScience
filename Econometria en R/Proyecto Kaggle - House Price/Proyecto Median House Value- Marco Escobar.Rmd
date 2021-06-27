@@ -1,0 +1,131 @@
+---
+title: "Proyecto Median House Value- Marco Escobar"
+output: github_document
+---
+
+## Regresión Lineal
+
+### Este modelo debe predecir la columna medianhousevalue del dataset proporcionado. El dataset contiene información sobre un censo con información de características demográficas de grupos de casas en el estado de California. 
+
+```{r}
+library(readr)
+library(ggplot2)
+library(corrplot) 
+library(mlbench) #repositorio de bases de datos
+library(Amelia) #tratamiento de datos
+library(plotly) 
+library(reshape2) 
+library(caret)  #usado para regresiones 
+library(caTools) 
+library(dplyr)
+```
+
+## Base de Datos 
+
+```{r}
+housing <- read.csv("train.csv")
+housing #Para usar la base de datos le asignamos a la variable
+```
+```{r}
+str(housing) # Obtenemos un data frame con la informacion de la base
+```
+```{r}
+head(housing) 
+```
+```{r}
+summary(housing) #Nos sirve para ver si hay cierta logica en los datos a tratar
+```
+## Limpieza de datos
+
+```{r}
+missmap(housing,col=c('yellow','blue'),y.at=1,y.labels='',legend=TRUE)
+
+```
+```{r}
+housing[is.na(housing)] <- 0 # se sustituyen valores nulos 
+missmap(housing,col=c('yellow','blue'),y.at=1,y.labels='',legend=TRUE)
+```
+## Análisis exploratorio de datos - Visualización
+
+### Correlación
+```{r}
+correlacion <- corrplot(cor(select(housing, -ocean_proximity)))
+#Colores frios indican correlacion directa r=1
+#Colores calidos indican correlacion inversa r=-1
+#Cuando r tiende a 0 no hay correlación lineal
+```
+```{r}
+correlacion 
+```
+### Gráfico de densidad
+
+```{r}
+housing %>% 
+  ggplot(aes(households)) +
+  stat_density() + 
+  theme_bw()
+```
+### Efecto de las variables
+```{r}
+#Veamos el efecto de las variables en la base de datos en median_income
+housing %>%
+  select(c(longitude, latitude, housing_median_age, total_rooms, total_bedrooms, population, median_income,households,median_house_value,ocean_proximity)) %>%
+  melt(id.vars = "households") %>%
+  ggplot(aes(x = value, y = households, colour = variable)) +
+  geom_point(alpha = 0.7) +
+  stat_smooth(aes(colour = "black")) +
+  facet_wrap(~variable, scales = "free", ncol = 2) +
+  labs(x = "Variable Value", y = "House holds") +
+  theme_minimal()
+```
+### Construcción de modelos y predicción
+```{r}
+# establecer una semilla
+set.seed(123)
+#Seccionar los datos , `split ()` asigna un booleano a una nueva columna basada en el SplitRatio especificado.
+split <- sample.split(housing,SplitRatio =0.75) #porcentaje de training data
+train <- subset(housing,split==TRUE) #extraer datos de la base de datos housing
+test <- subset(housing,split==FALSE)
+# train <- select(train,-b) tomar toda la data menos b
+# test <- select(test,-b)
+```
+### Entrenando el modelo
+```{r}
+model <- lm(households ~ -1 + total_rooms + total_bedrooms + population, data = train)
+summary(model)
+```
+### Visualización del modelo
+```{r}
+res <- residuals(model)
+# Convertir residuos en un DataFrame
+res <- as.data.frame(res)
+ggplot(res,aes(res)) +  geom_histogram(fill='blue',alpha=0.5)
+```
+```{r}
+plot(model)
+```
+### Predicciones
+```{r}
+### probando el modelo
+test$predicted.households <- predict(model,test)
+
+pl1 <-test %>% 
+  ggplot(aes(households,predicted.households)) +
+  geom_point(alpha=0.5) + 
+  stat_smooth(aes(colour='black')) +
+  xlab('Actual value of households') +
+  ylab('Predicted value of households')+
+  theme_bw()
+
+ggplotly(pl1)
+```
+### Evaluando el modelo
+```{r}
+error <- test$households-test$households
+rmse <- sqrt(mean(error)^2)
+rmse
+```
+
+
+
+
