@@ -1,0 +1,128 @@
+---
+title: "Laboratorio #3 - Modelos de Regresión en R"
+output: html_document
+---
+
+# Ejercici # 1: realice  una  función que  dado  un dataframe cualquiera de dos columnas, donde la primera(índice1)sea el valor de la variable independiente (X) y la segunda sea elvalor de una variable dependiente (Y), devuelva una lista con los siguientes elementos:
+
+```{r}
+edad <- c(22, 34, 29, 25, 30, 33, 31, 27, 25, 25)
+tiempo <- c(14.21, 10.36, 11.89, 13.81, 12.03, 10.99, 12.48, 13.37, 12.29, 11.92)
+sexo <- c("M","H","H","M","M","H","M","M","H","H")
+misDatos <- data.frame(edad,tiempo,sexo)
+misDatos
+```
+
+```{r}
+str(misDatos)
+```
+```{r}
+names(misDatos)
+```
+# 1) Un arreglo con los valores de los estimadores para 𝛽0 y 𝛽1.
+
+# 2)El valor del coeficiente de determinación 𝑟2 del modelo.
+
+# 3)El coeficiente de correlación 𝑟. 
+
+# 4)Un arreglo con los valores de los residuos.
+
+# 5)Una gráfica con la nube de puntos y la recta de regresión del modelo.
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Ejercicio #2: Para este ejercicio se lesolicita que desarrolle las siguientesactividades utilizando RStudioCon el dataset Lab #3-Admissions que podráencontrar en la sección de Material de Apoyo,realice lo siguiente:
+```{r}
+archivo <- read.csv("Admission_Predict_Ver1.1.csv", header = TRUE, sep = ",")
+archivo
+```
+#1.Realice un análisis estadístico sobre todas las variables del dataset, recuerde que pude usar la función summary().
+```{r cars}
+summary(archivo)
+```
+
+#2.Realice una gráfica de densidad para cada una de las variables numéricasen el dataset:GRE.Score, TOEFEL.Score, CGPA y Chance of Admit.
+```{r}
+dt1 <- as.data.frame(archivo$Serial.No)
+ggplot(dt1, aes(archivo$GRE.Score)) + geom_density()
+```
+```{r}
+ggplot(dt1, aes(archivo$TOEFL.Score)) + geom_density()
+```
+```{r}
+ggplot(dt1, aes(archivo$CGPA)) + geom_density()
+```
+```{r}
+ggplot(dt1, aes(archivo$Chance.of.Admit)) + geom_density()
+```
+
+#3.Realice  una  gráfica  de  correlación  entre  las  variables del inciso anterior.
+```{r}
+plot(archivo)
+```
+```{r}
+chart.Correlation(archivo, histogram = TRUE, method = "pearson")
+```
+
+#4.Realice  comentarios  sobre  el  análisis  estadístico  de  las variables numéricas y la gráfica de correlación.
+
+
+#5.Realice un scatter plot de todas las variables numéricas contra la variable Chance of Admit.
+```{r}
+dtar <- as.data.frame(archivo)
+ggplot(dtar, aes(x = archivo$GRE.Score, y = archivo$Chance.of.Admit)) +   geom_point()
+```
+```{r}
+ggplot(dtar, aes(x = archivo$TOEFL.Score, y = archivo$Chance.of.Admit)) +   geom_point()
+```
+```{r}
+ggplot(dtar, aes(x = archivo$University.Rating, y = archivo$Chance.of.Admit)) +   geom_point()
+```
+#6.Realice un modelo de regresión lineal simple con cada variable numérica como X y la variable Chance of Admit como Y.
+```{r}
+regresion <- lm(dtar$Chance.of.Admit ~ archivo$GRE.Score, data = dtar)
+summary(regresion)
+```
+```{r}
+plot(dtar$GRE.Score, dtar$Chance.of.Admit, xlab='Gre.Score', ylab='Chance of Admit')
+abline(regresion)
+```
+```{r}
+regresion1 <- lm(dtar$Chance.of.Admit ~ archivo$TOEFL.Score, data = dtar)
+summary(regresion1)
+```
+```{r}
+plot(dtar$TOEFL.Score, dtar$Chance.of.Admit, xlab='TOEFL.Score', ylab='Chance of Admit')
+abline(regresion1)
+```
+```{r}
+regresion2 <- lm(dtar$Chance.of.Admit ~ archivo$University.Rating, data = dtar)
+summary(regresion2)
+```
+```{r}
+plot(dtar$University.Rating, dtar$Chance.of.Admit, xlab='University.Rating', ylab='Chance of Admit')
+abline(regresion2)
+```
+
+#7.Realice una gráfica de cada modelo de regresión lineal en su scatter plot correspondiente.
+
+
+#8.Como en la Parte #2, realice un análisis sobre los resultados de cada modelo y diga cual de estos considera que es mejor y por que.
+
+
+# Ejercicio#3:A  continuación  se  le  muestran tres imágenesque muestranlos resultadosobtenidos decorrer la función summary() a dos modelos de regresión lineal, para este ejercicio se le solicita que realice la interpretación de las tablas resultantes. Recuerde tomar  en  cuenta  la  signficancia  de  los  parámetros  (signfícancia local), la signficancia del modelo (signficancia global),el valor del 𝑟#:  y  cualquier observación  que  considere relevante para determinar si el modelo estructuralmente es adecuado o no.
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.

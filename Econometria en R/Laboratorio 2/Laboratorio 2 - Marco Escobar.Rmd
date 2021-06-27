@@ -7,6 +7,12 @@ output: html_notebook
 # Esto permite que el usurio rente un bicicleta y la pueda devolver en otro lado. Actualmente hay mas de 500 de estos proyectos alrededor del mundo.
 # Estos kioskos se vuelven sensores del flujo de personas dentro de ciudades
 
+```{r}
+archivo <- read.csv("dataset.csv", header = TRUE, sep = ",")
+
+```
+
+
 # Variables
 # datetime - hourly date + timestamp
 # season - 1 = spring, 2 = summer, 3 = fall, 4 = winter
@@ -27,76 +33,111 @@ output: html_notebook
 
 # 1. ¿Qué mes es el que tiene la mayor demanda?
 ```{r}
-plot(cars)
+archivo %>%
+  group_by(mnth) %>%
+  summarise(cantidad = n())
+
+max(count(archivo, mnth))
+maxMes<-summary(factor(archivo$mnth)) 
+maxMeses<- which(maxMes == max(maxMes)) 
+maxMeses
+
 ```
 
 # 2. ¿Qué rango de hora es la de mayor demanda?
 ```{r}
-plot(cars)
+maxhoras <- summary(factor(archivo$hr))
+maxHora <- which(maxhoras == max(maxhoras))
+maxHora
+
 ```
 
 # 3. ¿Qué temporada es la mas alta?
 ```{r}
-plot(cars)
+cantTempora <- summary(factor(archivo$season))
+maxTemp <- which(cantTempora == max(cantTempora))
+cantTempora
 ```
 
 # 4. ¿A que temperatura baja la demanda?
 ```{r}
-plot(cars)
+bajaTemp <- summary(factor(archivo$temp))
+minTemp <- which(bajaTemp == min(bajaTemp))
+minTemp
 ```
 
 # 5. ¿A que humedad baja la demanda?
 ```{r}
-plot(cars)
+bajaHum <- summary(factor(archivo$hum))
+minHum <- which(bajaHum == min(bajaHum))
+minHum
 ```
 
 # 6. ¿Que condiciones climáticas serian ideales para nuestra demanda? (considere una función de densidad bivariable)
 ```{r}
-plot(cars)
+
 ```
 
 # 7. Mueste una gráfica de la densidad de rentas.
 ```{r}
-plot(cars)
+dtarc <- as.data.frame(archivo$registered)
+ggplot(dtarc, aes(archivo$cnt)) + geom_density()
+
 ```
 
 # 8. Determine promedio de personas que rentan bicicletas y están registradas.
+
 ```{r}
-plot(cars)
+mean(archivo$cnt[archivo$registered])
+
 ```
 
 # 9. Determine la mediana de personas que rentan bicicletas y no están registradas.
 ```{r}
-plot(cars)
+median(archivo$cnt[archivo$casual])
+
 ```
 
 # 10. Deterimne la renta total, renta promedio por cada tipo de condición climática.
 ```{r}
-plot(cars)
+sum(archivo$cnt[archivo$weathersit])
+mean(archivo$cnt[archivo$weathersit])
+
 ```
 
 # 11. Determine y muestre una gráfica de barras de cada renta por tipo de temporada.
 ```{r}
-plot(cars)
+count(archivo, season)
+dtar <- as.data.frame(archivo)
+ggplot(dtar, aes(x = archivo$season, y = archivo$cnt)) +  geom_col()
 ```
 
 # 12. Muestre una gráfica de la densidad por hora.
 ```{r}
-plot(cars)
+dtar <- as.data.frame(archivo)
+ggplot(dtar, aes(archivo$hr)) + geom_density()
+
 ```
+
+
+
 
 # 13. Muestre una gráfica de barras por día del mes como eje x y la cantidad total de alquileres como el eje Y.
 ```{r}
-plot(cars)
+dtar <- as.data.frame(archivo)
+ggplot(dtar, aes(x = archivo$mnth, y = archivo$cnt)) +  geom_col()
+
 ```
 
 # 14. Muestre una serie temporal (gráfica) con el tiempo (mes-dia-año) como eje de tiempo y la cantidad de alquieleres como ejer Y.
 ```{r}
-plot(cars)
+dtar <- as.data.frame(archivo)
+ggplot(dtar, aes(x = archivo$mnth, y = archivo$cnt)) +  geom_smooth()
 ```
 
 # 15. Muestre una gráfica de puntos que relaciones la temperatura como ejer X y la humedad como eje Y
 ```{r}
-plot(cars)
+dtar <- as.data.frame(archivo)
+ggplot(dtar, aes(x = archivo$temp, y = archivo$hum)) +   geom_point()
 ```
 

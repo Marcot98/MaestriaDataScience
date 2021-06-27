@@ -1,0 +1,315 @@
+---
+title: "Laboratorio 4 - Selección de Modelos e Ingeniería de Características"
+output: html_document
+---
+#Ejercicio #1: Para el dataset house_prices.csv (visto en clase) adjunto a este laboratorio implemente todas las operaciones de ingeniería de características vistas en clase. En clase usamos algunas de las variables para ejemplificar como realizar las operaciones, ya que estamos usando el mismo dataset puede replicar dichas operaciones, pero deberá completar el dataset completo, es decir realizar ingeniería de características para las demás columnas que no tratamos en clase.
+
+#Ejercicio #2: Para este ejercicio deberá implementar una función que permita seleccionar un modelo de regresión de varias variables, utilizando el algoritmo Fordward Selection Regression. Considere los siguientes detalles para su implementación:
+#1) Considere M0 como un modelo de cero variables predictoras, 
+#2) Para i = 1, … , p donde p denota la cantidad de variables disponibles en el dataset.
+#a. Seleccione el modelo Mocomo aquel modelo de Mi variables predictoras que  producen el menor valor de RMSE (utilice K-Folds para hacer validación cruzada y seleccionar dicho modelo).
+#b. Fije las variables del modelo Mi como base para producir el modelo Mi+1,repita este procedimiento siempre y cuando el modelo Mi+1produzca un  menor valor de RMSE
+
+
+```{r}
+library(dplyr)
+library(ggplot2)
+```
+
+```{r}
+dataset<-read.csv("house_prices.csv")
+dataset
+```
+#Imputación de Faltantes
+```{r}
+colsNA<-colnames(dataset)[!complete.cases(t(dataset))]
+colsNA
+```
+```{r}
+incompleteData<-dataset %>%
+  select(colsNA)
+incompleteData
+```
+```{r}
+porcentajeNA<-as.data.frame(apply(
+    incompleteData, MARGIN = 2, function(col) mean(is.na(col))))
+colnames(porcentajeNA)<-c("porcentaje")
+porcentajeNA
+```
+```{r}
+procesables<-porcentajeNA %>%
+  filter(porcentajeNA <= 0.05)
+procesables
+```
+```{r}
+dataset %>%
+  select(rownames(procesables))
+```
+
+```{r}
+incompleteData$MasVnrArea_media<-ifelse(is.na(incompleteData$MasVnrArea),
+                                     mean(incompleteData$MasVnrArea, na.rm=TRUE),
+                                     incompleteData$MasVnrArea)
+
+incompleteData$MasVnrArea_mediana<-ifelse(is.na(incompleteData$MasVnrArea),
+                                     median(incompleteData$MasVnrArea, na.rm=TRUE),
+                                     incompleteData$MasVnrArea)
+
+incompleteData
+```
+```{r}
+incompleteData %>%
+  ggplot(aes(x=MasVnrArea, y=..density..))+
+  geom_density(color="blue", lwd=1) +
+  geom_density(aes(x=MasVnrArea_media, y=..density..), col="red", lwd=1)+
+  geom_density(aes(x=MasVnrArea_mediana, y=..density..), col="purple", lwd=1)+
+  theme_minimal()
+```
+
+
+```{r}
+dataset$LotFrontage_media<-ifelse(is.na(dataset$LotFrontage),
+                                     mean(dataset$LotFrontage, na.rm=TRUE),
+                                     dataset$LotFrontage)
+
+dataset$LotFrontage_mediana<-ifelse(is.na(dataset$LotFrontage),
+                                     median(dataset$LotFrontage, na.rm=TRUE),
+                                     dataset$LotFrontage)
+
+dataset %>%
+  ggplot(aes(x=LotFrontage, y=..density..))+
+  geom_density(color="blue", lwd=0.5) +
+  geom_density(aes(x=LotFrontage_media, y=..density..), col="red", lwd=0.5)+
+  geom_density(aes(x=LotFrontage_mediana, y=..density..), col="purple", lwd=0.5)+
+  theme_minimal()
+```
+```{r}
+library(reshape2)
+
+subData<-incompleteData %>%
+  select(MasVnrArea, MasVnrArea_media, MasVnrArea_mediana)
+
+dataX<-melt(subData)
+
+dataX %>%
+  ggplot(aes(x=variable, y=value)) +
+  geom_boxplot()
+```
+```{r}
+subData<-dataset %>%
+  select(LotFrontage, LotFrontage_media, LotFrontage_mediana)
+
+dataX<-melt(subData)
+
+dataX %>%
+  ggplot(aes(x=variable, y=value)) +
+  geom_boxplot()
+```
+
+#Codificación de Varaibles Categóricas
+```{r}
+
+dataset$BsmtQual
+table(dataset$BsmtQual)
+```
+```{r}
+table(dataset$FireplaceQu)
+```
+```{r}
+subData<- dataset %>%
+  select(BsmtQual, FireplaceQu)
+
+OHE<-dummyVars("~.", data=subData)
+OHE_dataframe<-data.frame(predict(OHE, newdata=subData))
+OHE_dataframe
+```
+
+```{r}
+OHE<-dummyVars("~.", data=dataset)
+OHE_dataframe<-data.frame(predict(OHE, newdata=dataset))
+OHE_dataframe
+```
+```{r}
+dim(dataset)
+```
+```{r}
+dim(OHE_dataframe)
+```
+
+#Frequency Encoding
+```{r}
+unique(dataset$SalePrice)
+```
+```{r}
+FreqAnalysis <- dataset %>%
+  group_by(SalePrice) %>%
+  summarise(FreqVal = n(), Density=n()/nrow(dataset)) %>%
+  arrange(-FreqVal)
+FreqAnalysis
+```
+
+```{r}
+merge(dataset, FreqAnalysis, by.x="SalePrice", by.y="SalePrice")
+```
+
+#Feature Scaling:
+```{r}
+library(MASS)
+dataTemp<-Boston
+summary(Boston)
+```
+```{r}
+dataTemp %>%
+  ggplot(aes(x=nox, y=..density..))+
+  geom_density(col="darkgreen") +
+  geom_density(aes(x=age, y=..density..), col="red")+
+  geom_density(aes(x=dis, y=..density..), col="blue")+
+  theme_minimal()
+```
+
+```{r}
+dataTemp$nox_std<-((dataTemp$nox - mean(dataTemp$nox))/sd(dataTemp$nox))
+dataTemp$age_std<-((dataTemp$age - mean(dataTemp$age))/sd(dataTemp$age))
+dataTemp$dis_std<-((dataTemp$dis - mean(dataTemp$dis))/sd(dataTemp$dis))
+
+dataTemp %>%
+  ggplot(aes(x=nox_std, y=..density..))+
+  geom_density(col="darkgreen") +
+  geom_density(aes(x=age_std, y=..density..), col="red")+
+  geom_density(aes(x=dis_std, y=..density..), col="blue")+
+  theme_minimal()
+
+```
+```{r}
+dataTemp$nox_minmax<-((dataTemp$nox - min(dataTemp$nox))/(max(dataTemp$nox) - min(dataTemp$nox)))
+dataTemp$age_minmax<-((dataTemp$age - min(dataTemp$age))/(max(dataTemp$age) - min(dataTemp$age)))
+dataTemp$dis_minmax<-((dataTemp$dis - min(dataTemp$dis))/(max(dataTemp$dis) - min(dataTemp$dis)))
+
+dataTemp %>%
+  ggplot(aes(x=nox_minmax, y=..density..))+
+  geom_density(col="darkgreen") +
+  geom_density(aes(x=age_minmax, y=..density..), col="red")+
+  geom_density(aes(x=dis_minmax, y=..density..), col="blue")+
+  theme_minimal()
+```
+
+#Transformación de Variables.
+```{r}
+dataset %>%
+  ggplot(aes(x=GrLivArea)) +
+  geom_histogram(color="white", fill="blue", alpha=0.8)+
+  theme_minimal()
+```
+```{r}
+dataset %>%
+  ggplot(aes(sample=GrLivArea))+
+  stat_qq() +
+  stat_qq_line(col="red", lwd=1)+
+  theme_minimal()
+```
+```{r}
+dataset$GrLivArea_log<-log(dataset$GrLivArea)
+dataset %>%
+  ggplot(aes(sample=GrLivArea_log))+
+  stat_qq() +
+  stat_qq_line(col="red", lwd=1)+
+  theme_minimal()
+```
+```{r}
+dataset %>%
+  ggplot(aes(x=GrLivArea_log)) +
+  geom_histogram(color="white", fill="blue", alpha=0.8)+
+  theme_minimal()
+```
+```{r}
+dataset$GrLivArea_inv<-1/(dataset$GrLivArea)
+dataset %>%
+  ggplot(aes(sample=GrLivArea_inv))+
+  stat_qq() +
+  stat_qq_line(col="red", lwd=1)+
+  theme_minimal()
+```
+```{r}
+dataset %>%
+  ggplot(aes(x=GrLivArea_inv)) +
+  geom_histogram(color="white", fill="blue", alpha=0.8)+
+  theme_minimal()
+```
+
+```{r}
+dataset$GrLivArea_cuad<-(dataset$GrLivArea)^2
+dataset %>%
+  ggplot(aes(sample=GrLivArea_cuad))+
+  stat_qq() +
+  stat_qq_line(col="red", lwd=1)+
+  theme_minimal()
+```
+```{r}
+dataset %>%
+  ggplot(aes(x=GrLivArea_cuad)) +
+  geom_histogram(color="white", fill="blue", alpha=0.8)+
+  theme_minimal()
+```
+
+#Outliers:
+
+```{r}
+
+library(gridExtra)
+
+detect_outliers<-function(df, colname){
+  histPlot<-df %>%
+    ggplot(aes_string(x=colname)) +
+    geom_histogram(color='white', fill='blue', alpha=0.8)+
+    theme_minimal()
+  
+  boxPlot<-df %>%
+    ggplot(aes_string(y=colname))+
+    geom_boxplot()+
+    theme_minimal()
+  
+  qqPlot<-df %>%
+    ggplot(aes_string(sample=colname))+
+    stat_qq()+
+    stat_qq_line(col="red", lwd=1)+
+    theme_minimal()
+  
+  plotOut<-grid.arrange(histPlot, boxPlot, qqPlot, ncol=3) +
+    theme(aspect.ratio = 5/50)
+  
+  return(plotOut)
+}
+
+detect_outliers(dataset, "LotFrontage")
+```
+
+
+```{r}
+#capping
+
+capping<-function(arr)
+
+capping<-function(arr){
+  IQR<-quantile(arr, 0.75) - quantile(arr, 0.25)
+  LS<-mean(arr) + 1.75*IQR
+  LI<-mean(arr) - 1.75*IQR
+  
+  arr<-ifelse(arr >= LS, LS, arr)
+  arr<-ifelse(arr <= LI, LI, arr)
+  return(arr)
+}
+
+#debug(capping)
+dataset$GrLivArea_outliers<-capping(dataset$GrLivArea)
+#undebug(capping)
+
+detect_outliers(dataset, "GrLivArea")
+```
+
+```{r}
+detect_outliers(dataset, "GrLivArea_outliers")
+```
+
+
+
+
