@@ -125,7 +125,16 @@ error <- test$households-test$households
 rmse <- sqrt(mean(error)^2)
 rmse
 ```
+```{r}
+head(test$predicted.households)
+```
+```{r}
+# create a dataframe with our results
+my_submission <- data_frame('id' = test$id, 'median_house_value' = test$predicted.households)
 
+# save our file
+write_csv(my_submission, 'submission.csv')
+```
 
 
 
