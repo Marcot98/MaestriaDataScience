@@ -1,0 +1,62 @@
+---
+title: "Proyecto Laboratorio – Series de Tiempo / Marco Escobar"
+output: github_document
+---
+
+#Ejercicio #1:
+#Desarrolle el código de R necesario para completar los siguientes puntos.
+#1. Cree un arreglo de 1500 valores con distribución de probabilidad normal con media = 0 y desviación estándar = 5.
+
+```{r cars}
+summary(cars)
+```
+
+#2. Cree una suma acumulativa de estos valores.
+
+#3. Muestre una gráfica de la serie temporal.
+
+#4. Cree una serie de tiempo con la función ts()
+
+#5. Verifique la descomposición de la serie tiempo usando una frecuencia de 1.
+
+#6. Realice un comentario sobre cada uno de los componentes de la serie temporal.
+
+#7. Determine se la serie es estacionar o no (stationarity).
+
+#8. De no ser estacionar, investigue como es posible resolver este problema usando diferenciación temporal.
+
+#9. Muestre y una grafica sobre la serie temporal resultante.
+
+#Ejercicio #2:
+#Con el dataset de ventasProductos.csv realice los siguientes pasos:
+#1. Analice la estructura del dataset, no que existe una variable de timestamp, producto y valor de producción.
+#2. Cree un modelo arima usando auto.arima para cada uno de los productos en la data.
+#3. Tome en cuenta que cada id_producto posee 38 observaciones cada uno, por lo que deberá desarrollar un mecanismo que le permita seleccionar la data de timestamp y producción por cada valor de id_producto para poder seleccionar y entrenar el modelo.
+#4. Genere las predicciones para cada caso el cual sea la mitad de la ventana de data actual es decir 16 ciclos (meses) hacia delante.
+#5. Genere una gráfica para cada caso
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## GitHub Documents
+
+This is an R Markdown format used for publishing markdown documents to GitHub. When you click the **Knit** button all R code chunks are run and a markdown file (.md) suitable for publishing to GitHub is generated.
+
+## Including Code
+
+You can include R code in the document as follows:
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
