@@ -7,56 +7,209 @@ output: github_document
 #Desarrolle el código de R necesario para completar los siguientes puntos.
 #1. Cree un arreglo de 1500 valores con distribución de probabilidad normal con media = 0 y desviación estándar = 5.
 
-```{r cars}
-summary(cars)
+```{r}
+X = dnorm(0:1500,0,5)
+head(X)
 ```
-
+```{r}
+freqAbs = table(X)
+freqAbs
+```
+```{r}
+freqRel = prop.table(freqAbs)
+freqRel
+```
 #2. Cree una suma acumulativa de estos valores.
+
+```{r}
+z1 = sum(X)
+z1
+```
 
 #3. Muestre una gráfica de la serie temporal.
 
-#4. Cree una serie de tiempo con la función ts()
+```{r}
+plot(X)
+```
 
+#4. Cree una serie de tiempo con la función ts()
+```{r}
+tst = ts(X, c(freqAbs,1), frequency = 10)
+plot(tst)
+```
 #5. Verifique la descomposición de la serie tiempo usando una frecuencia de 1.
+```{r}
+tst = ts(X, c(freqAbs), frequency = 1)
+plot(tst)
+```
 
 #6. Realice un comentario sobre cada uno de los componentes de la serie temporal.
+# X es sobre la distribución normal de 1500 datos, media 0 y desviación de 5
+# se sacaron frecuencias absoluta y frecuencia con probabilidad.
+# se grafico la serie con frecuencia a 1
 
 #7. Determine se la serie es estacionar o no (stationarity).
+```{r}
+cycle(tst)
+```
+```{r}
+boxplot(tst ~ cycle(tst))
+#no es estacionaria
+```
 
 #8. De no ser estacionar, investigue como es posible resolver este problema usando diferenciación temporal.
+```{r}
+dtg =  diff(tst)
+head(dtg,12)
+```
 
 #9. Muestre y una grafica sobre la serie temporal resultante.
 
+```{r}
+plot(dtg)
+
+```
+```{r}
+dtg2= diff(tst, differences = 2)
+head(dtg2,12)
+```
+```{r}
+plot(dtg2)
+```
 #Ejercicio #2:
 #Con el dataset de ventasProductos.csv realice los siguientes pasos:
 #1. Analice la estructura del dataset, no que existe una variable de timestamp, producto y valor de producción.
+```{r}
+library(dplyr)
+library(ggplot2)
+```
+
+```{r}
+arch<-read.csv("dataOut.csv")
+head(arch)
+summary(arch)
+```
+```{r}
+str(arch[,c(1:3)])
+```
+```{r}
+plot(arch)
+```
+```{r}
+tt = ts(arch, freq = 12, start = c(2015,1))
+plot(tt)
+```
+
+```{r}
+start(tt)
+end(tt)
+cycle(tt)
+boxplot(tst ~ cycle(tst))
+
+```
+```{r}
+boxplot(tt ~ cycle(tt))
+```
 #2. Cree un modelo arima usando auto.arima para cada uno de los productos en la data.
+```{r}
+View(arch)
+datos <- arch
+datos$timestamp = as.Date(datos$timestamp)
+ggplot(datos, aes(timestamp, produccion)) + geom_line() + scale_x_date('month')  + ylab("producción") +   xlab("")
+```
+```{r}
+ggplot(datos, aes(timestamp, id_producto)) + geom_line() + scale_x_date('month')  + ylab("id_producto") +   xlab("")
+```
+```{r}
+#eliminar valores atipicos
+count_ts = ts(datos[, c('id_producto')])
+datos$clean_id_producto = tsclean(count_ts)
+count_tsp = ts(datos[, c('produccion')])
+datos$clean_produccion = tsclean(count_tsp)
+```
+
+```{r}
+ggplot() +
+  geom_line(data = datos, aes(x = timestamp, y = clean_produccion)) + ylab('Cleaned produccion Count')
+```
+
+```{r }
+datos$idp_ma = ma(datos$clean_id_producto, order=7) # using the clean count with no outliers
+datos$idp_ma30 = ma(datos$clean_id_producto, order=30)
+datos$p_ma = ma(datos$clean_produccion, order=7) # using the clean count with no outliers
+datos$p_ma30 = ma(datos$clean_produccion, order=30)
+
+
+ggplot() +
+  geom_line(data = datos, aes(x = timestamp, y = clean_produccion, colour = "Counts")) +
+  geom_line(data = datos, aes(x = timestamp, y = p_ma,   colour = "Weekly Moving Average"))  +
+  geom_line(data = datos, aes(x = timestamp, y = p_ma30, colour = "Monthly Moving Average"))  +
+  ylab('id_producto Count')
+```
+```{r}
+count_ma = ts(na.omit(datos$p_ma), frequency=30)
+decomp = stl(count_ma, s.window="periodic")
+deseasonal_a <- seasadj(decomp)
+plot(decomp)
+```
+```{r}
+adf.test(count_ma, alternative = "stationary")
+```
+```{r}
+Acf(count_ma, main='')
+```
+```{r}
+Pacf(count_ma, main='')
+```
+```{r}
+count_d1 = diff(deseasonal_a, differences = 1)
+plot(count_d1)
+```
+```{r}
+adf.test(count_d1, alternative = "stationary")
+```
+```{r}
+Acf(count_d1, main='ACF for Differenced Series')
+```
+```{r}
+Pacf(count_d1, main='PACF for Differenced Series')
+```
+```{r}
+auto.arima(deseasonal_a, seasonal=FALSE)
+```
+
 #3. Tome en cuenta que cada id_producto posee 38 observaciones cada uno, por lo que deberá desarrollar un mecanismo que le permita seleccionar la data de timestamp y producción por cada valor de id_producto para poder seleccionar y entrenar el modelo.
+```{r}
+modeloarima<-auto.arima(deseasonal_a, seasonal=FALSE)
+modeloarima
+```
+```{r}
+tsdisplay(residuals(modeloarima), lag.max=10, main='(3,1,1) Model Residuals')
+```
+
 #4. Genere las predicciones para cada caso el cual sea la mitad de la ventana de data actual es decir 16 ciclos (meses) hacia delante.
+```{r}
+prediccion <- forecast(modeloarima, h=16)
+plot(prediccion)
+```
+
+
 #5. Genere una gráfica para cada caso
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+```{r}
+prediccion <- forecast(modeloarima, h=1)
+plot(prediccion)
+```
+```{r}
+prediccion <- forecast(modeloarima, h=2)
+plot(prediccion)
+```
+```{r}
+prediccion <- forecast(modeloarima, h=5)
+plot(prediccion)
 ```
 
-## GitHub Documents
-
-This is an R Markdown format used for publishing markdown documents to GitHub. When you click the **Knit** button all R code chunks are run and a markdown file (.md) suitable for publishing to GitHub is generated.
-
-## Including Code
-
-You can include R code in the document as follows:
-
-```{r cars}
-summary(cars)
+```{r}
+prediccion <- forecast(modeloarima, h=30)
+plot(prediccion)
 ```
-
-## Including Plots
-
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
-```
-
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
