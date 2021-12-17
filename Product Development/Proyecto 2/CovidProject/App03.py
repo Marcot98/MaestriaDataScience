@@ -415,7 +415,7 @@ st.sidebar.markdown('# Covid-19')
 st.sidebar.markdown('### Ultima Actualización: {}'.format(today_date))
 st.sidebar.markdown('---')
 st.sidebar.markdown("Seleccionar el tipo de visualización:")
-sections = ('World new cases', 'Historical trends', 'Top countries')
+sections = ('Nuevos Casos', 'Lista de Paises')
 selection = st.sidebar.radio('', sections)
 
 
@@ -431,51 +431,51 @@ def footer():
 
 
 if selection == sections[0]:
-    st.markdown('# World new cases')
+    st.markdown('# Nuevos casos en el mundo')
     st.markdown('---')
 
-    opt = {'New worldwide confirmed cases': fig1, 'New worldwide deaths': fig2}
+    opt = {'Nuevos casos confirmados': fig1, 'muertes confirmadas': fig2}
 
-    case = st.selectbox('Select option:', ('New worldwide confirmed cases', 'New worldwide deaths'))
+    case = st.selectbox('Elegir opción:', ('Nuevos casos confirmados', 'muertes confirmadas'))
     st.plotly_chart(opt[case], use_container_width=True)  # container)
 
     footer()
 
-elif selection == sections[1]:
-    st.markdown('# Historical trends')
-    st.markdown('---')
+#elif selection == sections[1]:
+#    st.markdown('# Historical trends')
+#    st.markdown('---')
 
-    opt = ('Confirmed cases', 'Deaths')
+ #   opt = ('Confirmed cases', 'Deaths')
 
-    daily_rolled_conf = rolling(daily()[:5])
-    Europe = [df.apply(replace_outliers) for df in daily()[7:8]]
-    daily_rolled_death = rolling(daily()[5:7] + Europe + daily()[8:], n_since=3)
+#    daily_rolled_conf = rolling(daily()[:5])
+#    Europe = [df.apply(replace_outliers) for df in daily()[7:8]]
+#    daily_rolled_death = rolling(daily()[5:7] + Europe + daily()[8:], n_since=3)
     # daily_rolled_death = rolling(daily()[5:], n_since=3)
 
-    case = st.selectbox('Select option:', opt)
-    cont_str = ('Europe', 'America', 'Asia', 'Africa', 'Oceania')
+#    case = st.selectbox('Select option:', opt)
+#    cont_str = ('Europe', 'America', 'Asia', 'Africa', 'Oceania')
 
 
-    if case == 'Confirmed cases':
-        for i, df in enumerate(daily_rolled_conf):
-            yticks = [1, 2, 5, 10, 20, 50, 100, 200, 500, 1000, 2000, 5000, 10000, 20000, 50000]
-            st.markdown('## {}'.format(cont_str[i]))
-            st.bokeh_chart(
-                bokeh_plot(df, 'confirmed', n_since=30, tickers=yticks, cont=cont_str[i], format_axes=True),
-                use_container_width=container)
+#    if case == 'Confirmed cases':
+#        for i, df in enumerate(daily_rolled_conf):
+#            yticks = [1, 2, 5, 10, 20, 50, 100, 200, 500, 1000, 2000, 5000, 10000, 20000, 50000]
+#            st.markdown('## {}'.format(cont_str[i]))
+#            st.bokeh_chart(
+#                bokeh_plot(df, 'confirmed', n_since=30, tickers=yticks, cont=cont_str[i], format_axes=True),
+#               use_container_width=container)
 
-    elif case == 'Deaths':
-        for i, df in enumerate(daily_rolled_death):
-            yticks = [1, 2, 5, 10, 20, 50, 100, 200, 500, 1000, 2000, 5000]
-            st.markdown('## {}'.format(cont_str[i]))
-            st.bokeh_chart(
-                bokeh_plot(df, 'deaths', n_since=3, tickers=yticks, cont=cont_str[i], format_axes=True),
-                use_container_width=container)
+#    elif case == 'Deaths':
+#        for i, df in enumerate(daily_rolled_death):
+#            yticks = [1, 2, 5, 10, 20, 50, 100, 200, 500, 1000, 2000, 5000]
+#            st.markdown('## {}'.format(cont_str[i]))
+#            st.bokeh_chart(
+#                bokeh_plot(df, 'deaths', n_since=3, tickers=yticks, cont=cont_str[i], format_axes=True),
+#                use_container_width=container)
 
-    footer()
+#    footer()
 
-elif selection == sections[2]:
-    st.markdown('# Top countries')
+elif selection == sections[1]:
+    st.markdown('# Lista de Paises')
     st.markdown('---')
 
     cases2 = ('Confirmed', 'Deaths', 'Recoveries', 'Mortality rate')
